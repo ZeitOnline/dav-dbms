@@ -32,6 +32,10 @@ CREATE FUNCTION "plpgsql_call_handler" ()
   AS '/usr/lib/postgresql/lib/plpgsql.so', 'plpgsql_call_handler' 
   LANGUAGE 'C';
 
+CREATE LANGUAGE plpgsql
+  HANDLER plpgsql_call_handler;
+
+
 ------------------------------------------------------------------------[ TABLES ]--
 
 -- Our facts table
