@@ -27,5 +27,5 @@ install: dso
 
 dso: facts.so
 
-facts.so: facts.c Makefile
+facts.so: facts.c facts.h Makefile
 	$(CC) $(WARNINGS) $(CFLAGS) $(LIBS) -o facts.so $(SRC)

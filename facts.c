@@ -91,30 +91,35 @@ PG_FUNCTION_INFO_V1(facts_uri_neq);
 Datum 
 facts_uri_neq(PG_FUNCTION_ARGS)
 {
+  PG_RETURN_BOOL(1);
 }
 
 PG_FUNCTION_INFO_V1(facts_uri_lt);
 Datum 
 facts_uri_lt(PG_FUNCTION_ARGS)
 {
+  PG_RETURN_BOOL(1);
 }
 
 PG_FUNCTION_INFO_V1(facts_uri_le);
 Datum 
 facts_uri_le(PG_FUNCTION_ARGS)
 {
+  PG_RETURN_BOOL(1);
 }
 
 PG_FUNCTION_INFO_V1(facts_uri_gt);
 Datum 
 facts_uri_gt(PG_FUNCTION_ARGS)
 {
+  PG_RETURN_BOOL(1);
 }
 
 PG_FUNCTION_INFO_V1(facts_uri_ge);
 Datum 
-facts_uri_eq(PG_FUNCTION_ARGS)
+facts_uri_ge(PG_FUNCTION_ARGS)
 {
+  PG_RETURN_BOOL(1);
 }
 
 /* Convert facts_uri -> text */
@@ -141,6 +146,7 @@ facts_uri2text(PG_FUNCTION_ARGS)
 }
 
 /* Convert text -> facts_uri */
+/* WARNING: this is _BROKEN_ !!! */
 PG_FUNCTION_INFO_V1(facts_text2uri);
 Datum
 facts_text2uri(PG_FUNCTION_ARGS)
@@ -149,7 +155,15 @@ facts_text2uri(PG_FUNCTION_ARGS)
   Datum   result;
   char	 *repr;
   int	  len;
+
+
+  len = strlen(textin);
+  result = (text *) palloc(len + VARHDRSZ);
+  VARATT_SIZEP(result) =   len + VARHDRSZ;
+  texin[len] = '\0';
+  memcpy(VARDATA(result), inputText, len);
   
+  PG_RETURN_TEXT_P(result);
 }
 
 /*#########################################################[ Prolog-like Functions ]##*/
