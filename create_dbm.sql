@@ -1,3 +1,5 @@
+-- Filespec: $Id$
+-- 
 -- $$LICENCE$$
 -- This script generates the database structures to
 -- handle the CMS resource database.

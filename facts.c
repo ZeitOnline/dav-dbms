@@ -1,12 +1,15 @@
-
+/* Filespec: $Id$ */
 
 /*  
  * $$LICENCE$$
  *
  */
-#include "executor/spi.h"
-//#include <fmgr.h>
 
+#include "executor/spi.h"
+
+/*
+ #include <fmgr.h>
+*/
 
 
 /* This is void* but we want to distinguish it here */
