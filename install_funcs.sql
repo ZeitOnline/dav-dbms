@@ -3,16 +3,9 @@
 SET search_path = public;
 SET autocommit TO 'on';
 
-CREATE TYPE facts_uri (
-  INTERNALLENGTH = VARIABLE,
-  EXTERNALLENGTH = VARIABLE,
-  INPUT  = facts_uri_in,
-  OUTPUT = facts_uri_out
-
-);
-
-COMMENT ON TYPE facts_uri IS
- 'This datatype holds the URIs used as document identifiers within the facts database';
+-- Seems that (at least some versions) of PostgreSQL can
+-- rather cope with `type stubs' than with `func stubs',
+-- so it's better to get the funcs first, then the types:
 
 CREATE OR REPLACE FUNCTION facts_uri_in(opaque)
   RETURNS facts_uri
@@ -25,8 +18,21 @@ CREATE OR REPLACE FUNCTION facts_uri_out(opaque)
   LANGUAGE 'C';
 
  -- Typecasts
-DROP CAST (text AS facts_uri);
-CREATE CAST (text AS facts_uri) WITH FUNCTION facts_uri_in(opaque) AS IMPLICIT;
+CREATE TYPE facts_uri (
+  INTERNALLENGTH = VARIABLE,
+  EXTERNALLENGTH = VARIABLE,
+  INPUT  = facts_uri_in,
+  OUTPUT = facts_uri_out
+
+);
+
+COMMENT ON TYPE facts_uri IS
+ 'This datatype holds the URIs used as document identifiers within the facts database';
+
+-- NOTE Doesn't work. Real Casts (TM) are coming
+-- DROP CAST (text AS facts_uri);
+-- CREATE CAST (text AS facts_uri) WITH FUNCTION facts_uri_in(opaque) AS IMPLICIT;
+
 
  -- Comparison/Indexing
 CREATE OR REPLACE FUNCTION facts_uri_eq(facts_uri, facts_uri)
