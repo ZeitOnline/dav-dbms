@@ -1,6 +1,7 @@
 -- Filespec: $Id$
-\c cms
 
+SET search_path = public;
+SET autocommit TO 'on';
 
 CREATE TYPE facts_uri (
   INTERNALLENGTH = VARIABLE,
@@ -19,10 +20,15 @@ CREATE OR REPLACE FUNCTION facts_uri_in(opaque)
   LANGUAGE 'C';
 
 CREATE OR REPLACE FUNCTION facts_uri_out(opaque)
-  RETURNS facts_uri
+  RETURNS cstring
   AS '/usr/lib/postgresql/lib/facts.so', 'facts_uri_out'
   LANGUAGE 'C';
 
+ -- Typecasts
+DROP CAST (text AS facts_uri);
+CREATE CAST (text AS facts_uri) WITH FUNCTION facts_uri_in(opaque) AS IMPLICIT;
+
+ -- Comparison/Indexing
 CREATE OR REPLACE FUNCTION facts_uri_eq(facts_uri, facts_uri)
   RETURNS bool
   AS '/usr/lib/postgresql/lib/facts.so', 'facts_uri_eq'
@@ -38,7 +44,8 @@ CREATE OPERATOR = (
   RIGHTARG   = facts_uri, 
   PROCEDURE  = facts_uri_eq,
   COMMUTATOR = '=',
-  NEGATOR = '<>'
+  NEGATOR = '<>',
+  HASHES
  -- RESTRICT = eqsel, JOIN = eqjoinsel,
  -- SORT1 = '<', SORT2 = '<'
 );
@@ -86,3 +93,4 @@ CREATE OR REPLACE FUNCTION is_parent_or_self(text, text)
   AS '/usr/lib/postgresql/lib/facts.so', 'is_parent_or_self'
   LANGUAGE 'C'
   WITH (iscachable);
+

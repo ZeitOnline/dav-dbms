@@ -90,6 +90,36 @@ facts_uri_eq(PG_FUNCTION_ARGS)
   PG_RETURN_BOOL(1);
 }
 
+PG_FUNCTION_INFO_V1(facts_uri_neq);
+Datum 
+facts_uri_neq(PG_FUNCTION_ARGS)
+{
+}
+
+PG_FUNCTION_INFO_V1(facts_uri_lt);
+Datum 
+facts_uri_lt(PG_FUNCTION_ARGS)
+{
+}
+
+PG_FUNCTION_INFO_V1(facts_uri_le);
+Datum 
+facts_uri_le(PG_FUNCTION_ARGS)
+{
+}
+
+PG_FUNCTION_INFO_V1(facts_uri_gt);
+Datum 
+facts_uri_gt(PG_FUNCTION_ARGS)
+{
+}
+
+PG_FUNCTION_INFO_V1(facts_uri_ge);
+Datum 
+facts_uri_eq(PG_FUNCTION_ARGS)
+{
+}
+
 /* Convert facts_uri -> text */
 PG_FUNCTION_INFO_V1(facts_uri2text);
 Datum 
@@ -122,8 +152,6 @@ facts_text2uri(PG_FUNCTION_ARGS)
   Datum   result;
   char	 *repr;
   int	  len;
-
-  
   
 }
 
@@ -383,6 +411,9 @@ facts_move_all(PG_FUNCTION_ARGS)
 }
 
 
+/* is_parent_or_self: uri, uri -> bool
+ * 
+ */
 extern Datum is_parent_or_self(PG_FUNCTION_ARGS);
 
 PG_FUNCTION_INFO_V1(is_parent_or_self);
@@ -423,7 +454,7 @@ is_parent_or_self(PG_FUNCTION_ARGS)
    * (case *self
    *   '/'  => #t
    *   '0'  => #t
-   *   else => +#f)
+   *   else =4> +#f)
    * Buuut ... if the last char of 'uri' allready was a '/' this
    * will fail! So we need to test for the last seen character of
    * uri as well in the default branch of the switch. 
