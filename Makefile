@@ -13,7 +13,7 @@
 PREFIX=/usr/local
 PGCONFIG=pg_config
 CC=gcc
-CFLAGS=-I `$(PGCONFIG) --includedir-server`  -fpic -shared
+CFLAGS=-I `$(PGCONFIG) --includedir` -I `$(PGCONFIG) --includedir-server`  -fpic -shared
 LIBS=-L `$(PGCONFIG) --libdir`
 WARNINGS=-Wall -Wmissing-prototypes
 
