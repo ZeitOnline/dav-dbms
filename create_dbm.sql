@@ -5,9 +5,12 @@
 -- WARNING: executing this script will destroy any
 -- previously created data!
 --
--- Install: psql -f create_dbm.sql themplate1
+-- Install: as database owner:
+--   psql -E -e -f create_dbm.sql template1
 --
 -- Version: 
+
+-----------------------------------------------------------------[ BASE DATABASE ]--
 
 -- Might fail
 DROP DATABASE cms;
@@ -29,6 +32,8 @@ CREATE FUNCTION "plpgsql_call_handler" ()
   AS '/usr/lib/postgresql/lib/plpgsql.so', 'plpgsql_call_handler' 
   LANGUAGE 'C';
 
+------------------------------------------------------------------------[ TABLES ]--
+
 -- Our facts table
 CREATE TABLE "facts" (
 	"uri"       text,
@@ -36,47 +41,16 @@ CREATE TABLE "facts" (
 	"name"      text,
 	"value"     text   );
 
--- Functions to handle 'assert'-like queries.
+---------------------------------------------------------------------[ FUNCTIONS ]--
 
--- assert(uri, namespace, name, value) -> bool
--- Store a fact (uri, namespace, name, value) into the database.
--- If a value for the given (uri, namespace, name) combination allready
--- exists, modify it, otherwise create a new tuple.
--- NOTE: this algorithm assumes that we do not need multi-sets for
---       a given resource. Is this true?
+-- function assert(uri, namespace, name, value) -> bool moved to file 'facts.c'
+-- and is implemented in 'C'.
 
-DROP FUNCTION assert(text, text, text, text);
-
-CREATE FUNCTION assert(text, text, text, text) RETURNS bool AS'
-
-  DECLARE 
-    p_uri       ALIAS FOR $1;
-    p_namespace ALIAS FOR $2;
-    p_name      ALIAS FOR $3;
-    p_value     ALIAS FOR $4;
-    result      BOOLEAN  := ''F'';
-    fact        RECORD;
-
-  BEGIN
-    -- Test if there exists a fact for (uri, namespace, name)
-    SELECT INTO fact *
-      FROM facts 
-      WHERE uri       = p_uri AND
-            namespace = p_namespace AND
-            name      = p_name;
-    IF NOT FOUND THEN 
-      INSERT INTO facts VALUES (p_uri, p_namespace, p_name, p_value);
-      result := ''T'';
-    ELSE
-      UPDATE facts SET value = p_value 
-        WHERE uri = p_uri AND namespace = p_namespace AND name = p_name; 
-    END IF;
-    RETURN result;
-  END;
-' LANGUAGE 'plpgsql';
 
 -- forget(uri, namespace, name, value) -> bool
--- 
+-- Forget a fact about a resource. The return value indicates
+-- whether a fact was indeed known to the dbm.
+ 
 DROP FUNCTION forget(text, text, text, text);
 
 CREATE FUNCTION forget(text, text, text, text) RETURNS bool AS'
@@ -88,7 +62,7 @@ CREATE FUNCTION forget(text, text, text, text) RETURNS bool AS'
     result      BOOLEAN  := ''T'';
 
   BEGIN
-      DELETE FROM facts
+    DELETE FROM facts
       WHERE uri       = p_uri AND
             namespace = p_namespace AND
             name      = p_name AND
