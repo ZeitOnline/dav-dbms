@@ -151,7 +151,7 @@ PG_FUNCTION_INFO_V1(facts_text2uri);
 Datum
 facts_text2uri(PG_FUNCTION_ARGS)
 {
-  text   *texint = PG_GETARG_TEXT_P(0);
+  text   *textin = PG_GETARG_TEXT_P(0);
   Datum   result;
   char	 *repr;
   int	  len;
@@ -160,8 +160,8 @@ facts_text2uri(PG_FUNCTION_ARGS)
   len = strlen(textin);
   result = (text *) palloc(len + VARHDRSZ);
   VARATT_SIZEP(result) =   len + VARHDRSZ;
-  texin[len] = '\0';
-  memcpy(VARDATA(result), inputText, len);
+  /* textin[len] = '\0'; */
+  memcpy(VARDATA(result), textin, len);
   
   PG_RETURN_TEXT_P(result);
 }
