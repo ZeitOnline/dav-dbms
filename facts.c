@@ -1,11 +1,17 @@
 /* Filespec: $Id$ */
 
+/* FIXME: 
+ * - declare facts_uri datatype as TOASTabel (
+ * - use pg_detoast_datum() on all arguments that are facts_uri
+ */
+
 /*  
  * $$LICENCE$$
  *
  */
 
 #include "executor/spi.h"
+#include "facts.h"
 
 /*
  #include <fmgr.h>
@@ -14,15 +20,6 @@
 
 /* This is void* but we want to distinguish it here */
 typedef void *pg_plan;
-
-/* Forward declare functions on facts_uri */
-Datum facts_uri_in(PG_FUNCTION_ARGS);
-Datum facts_uri_out(PG_FUNCTION_ARGS);
-Datum facts_uri_eq(PG_FUNCTION_ARGS);
-Datum facts_uri_lt(PG_FUNCTION_ARGS);
-Datum facts_uri_gt(PG_FUNCTION_ARGS);
-Datum facts_uri2text(PG_FUNCTION_ARGS);
-Datum facts_text2uri(PG_FUNCTION_ARGS);
 
 /* Read a facts_uri 
  */
