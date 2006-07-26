@@ -377,7 +377,8 @@ facts_move_all(PG_FUNCTION_ARGS)
   values[0] = PG_GETARG_DATUM(0);
   values[1] = PG_GETARG_DATUM(1);
 
-  cursor = SPI_cursor_open("RALFS", pos_plan, values, NULL);
+  /* FIXME: API change! */
+  cursor = SPI_cursor_open("RALFS", pos_plan, values, NULL, 1);
   if(cursor)
     {
       TupleDesc tupdesc;
