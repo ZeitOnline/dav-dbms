@@ -13,6 +13,11 @@
 #include "executor/spi.h"
 #include "facts.h"
 
+/* NOTE: This is new for Postgres >= 8.2 */
+#ifdef PG_MODULE_MAGIC
+PG_MODULE_MAGIC;
+#endif
+
 /*
  #include <fmgr.h>
 */

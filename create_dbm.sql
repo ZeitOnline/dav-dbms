@@ -19,7 +19,7 @@ DROP DATABASE cms;
 COMMIT;
 
 -- Create new database
-CREATE DATABASE cms;
+CREATE DATABASE cms WITH ENCODING = 'utf-8';
 COMMIT;
 
 -- Connect to the cms database
@@ -31,7 +31,7 @@ COMMIT;
 
 CREATE FUNCTION "plpgsql_call_handler" () 
   RETURNS opaque 
-  AS 'usr/lib/postgresql/8.1/lib/plpgsql.so', 'plpgsql_call_handler' 
+  AS '/usr/lib/postgresql/8.2/lib/plpgsql.so', 'plpgsql_call_handler' 
   LANGUAGE 'C';
 
 CREATE LANGUAGE plpgsql
