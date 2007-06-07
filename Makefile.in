@@ -10,9 +10,9 @@
 #   --version             show the PostgreSQL version and exit
 # 
 #
-PREFIX=/usr/local
+PREFIX=@PREFIX@
 PGCONFIG=@PGCONFIG@
-CC=gcc
+CC=@CC@
 CFLAGS=-I `$(PGCONFIG) --includedir` -I `$(PGCONFIG) --includedir-server`  -fpic -shared
 LIBS=-L `$(PGCONFIG) --libdir`
 WARNINGS=-Wall -Wmissing-prototypes
