@@ -12,6 +12,8 @@
 #
 PREFIX=@PREFIX@
 PGCONFIG=@PGCONFIG@
+PG_LIBDIR=`$(PGCONFIG) --pkglibdir`
+
 CC=@CC@
 CFLAGS=-I `$(PGCONFIG) --includedir` -I `$(PGCONFIG) --includedir-server`  -fpic -shared
 LIBS=-L `$(PGCONFIG) --libdir`
@@ -22,10 +24,15 @@ INSTDIR=`$(PGCONFIG) --pkglibdir`
 
 SRC=facts.c
 
+all: facts.so
+
+facts.so: facts.c facts.h Makefile
+	$(CC) $(WARNINGS) $(CFLAGS) $(LIBS) -o facts.so $(SRC)
+
 install: dso
 	install -D -o postgres facts.so $(INSTDIR)/facts.so
 
 dso: facts.so
 
-facts.so: facts.c facts.h Makefile
-	$(CC) $(WARNINGS) $(CFLAGS) $(LIBS) -o facts.so $(SRC)
+clean: 
+	-rm *.so *.o
