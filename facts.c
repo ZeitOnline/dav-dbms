@@ -65,6 +65,7 @@ facts_uri_out(PG_FUNCTION_ARGS)
 
 /* Compare two URIs 
  * For now we just compare the string representation.
+ * NOTE: do we need to check for NULL values?
  */
 PG_FUNCTION_INFO_V1(facts_uri_eq);
 Datum 
@@ -158,7 +159,7 @@ facts_text2uri(PG_FUNCTION_ARGS)
 {
   text   *textin = PG_GETARG_TEXT_P(0);
   Datum   result;
-  char	 *repr;
+  /* char	 *repr; x*/
   int	  len;
 
 
@@ -172,11 +173,6 @@ facts_text2uri(PG_FUNCTION_ARGS)
 }
 
 /*#########################################################[ Prolog-like Functions ]##*/
-
-/* Function declarations here */
-Datum facts_assert(PG_FUNCTION_ARGS);
-Datum facts_forget(PG_FUNCTION_ARGS);
-
 
 #define BATCHSIZE 10
 
@@ -193,6 +189,13 @@ Datum facts_forget(PG_FUNCTION_ARGS);
 
 #define QUERY_FORGET \
           "DELETE FROM facts WHERE uri = $1 AND namespace = $2 AND name = $3"
+
+
+#define QUERY_DELETE_RESOURCE \
+          "DELETE FROM facts WHERE uri = $1"
+
+#define QUERY_DELETE_COLLECTION \
+          "DELETE FROM facts WHERE uri like $1"
 
 /* NOTE: we use an explicit field name in the following query to save us
  * the touble of calling SPI_fnumber during each step of the cursor batch
@@ -265,7 +268,7 @@ facts_assert(PG_FUNCTION_ARGS)
 
   /* We have a connection to the server core with our own memory context
    * and a precompiled plan - let's see whether we allready have a similar
-   * fact in the databse.
+   * fact in the database.
    */
 
   res = SPI_execp(find_plan, values, "____", 0);
@@ -343,6 +346,96 @@ facts_forget(PG_FUNCTION_ARGS)
   PG_RETURN_NULL();
 }
 
+
+PG_FUNCTION_INFO_V1(facts_delete_resource);
+Datum
+facts_delete_resource(PG_FUNCTION_ARGS)
+{
+  Datum           values[1];
+  text           *uri;
+  static pg_plan  delete_resource_plan, delete_collection_plan;
+  static Oid      ctypes[1] = {TEXTOID};
+  int             res = -1;
+
+  if(PG_ARGISNULL(0)) {
+      elog(ERROR, "function delete_resource(): Can not remove NULL resource");
+  }
+  
+  if(SPI_connect() != SPI_OK_CONNECT)
+  {
+      elog(ERROR, "function facts:remove_Resource: SPI_connect failed");
+  }
+
+  if(!delete_resource_plan)
+  {
+      pg_plan pl;
+      
+      pl = SPI_prepare(QUERY_DELETE_RESOURCE, 1, ctypes);
+      if (pl == NULL) {
+          elog(ERROR, "function facts:delete_resource(): SPI_saveplan returned %d", SPI_result);
+          goto FINISH;
+      }
+      elog(NOTICE, "Saved query_delete plan for function delete_resource()");
+      delete_resource_plan = SPI_saveplan(pl);
+  }
+
+  if(!delete_collection_plan)
+  {
+      pg_plan pl;
+      
+      pl = SPI_prepare(QUERY_DELETE_COLLECTION, 1, ctypes);
+      if (pl == NULL) {
+          elog(ERROR, "function facts:delete_collection(): SPI_saveplan returned %d", SPI_result);
+          goto FINISH;
+      }
+      elog(NOTICE, "Saved query_delete plan for function delete_collection()");
+      delete_collection_plan = SPI_saveplan(pl);
+  }
+
+  values[0] = PG_GETARG_DATUM(0);
+  uri = PG_GETARG_TEXT_P(0);
+
+  /* Test for resource/collection-ness */
+  { 
+      char* tvalue;
+      size_t tv_length;
+      
+      tvalue    = (char *) VARDATA(uri);
+      tv_length = VARSIZE(uri) - VARHDRSZ;
+      if (tvalue[tv_length-1] == '/')
+      {
+          elog(ERROR, "function facts:delete_resource(): cannot delete collections!");
+          goto FINISH;
+      }
+  }
+  
+  res = SPI_execp(delete_resource_plan, values, "____", 0);
+  if (res != SPI_OK_DELETE) {    
+      switch (res) {
+      case SPI_ERROR_ARGUMENT: 
+          elog(ERROR, "function facts: could not check delete facts for resource. No plan or wrong count!");
+          break;
+      case SPI_ERROR_PARAM:
+          elog(ERROR, "function facts: could not check delete facts for resource. No value given!");
+          break;
+      default:
+          elog(ERROR, "function facts: could not check delete facts for resource. Unknown error (%d)", res);
+          break;
+      }
+    goto FINISH;
+  } else {
+      elog(WARNING, "function delete_resource(): deleted %d facts for resource.", SPI_processed);
+  }
+  
+  
+  FINISH:
+  SPI_finish();
+  PG_RETURN_NULL();
+}
+
+
+
+/*
 
 /* Move a resource (and all it's children if the resource is a collection */
 extern Datum facts_move_all(PG_FUNCTION_ARGS);

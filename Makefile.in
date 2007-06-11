@@ -11,20 +11,18 @@
 # 
 #
 PREFIX=@PREFIX@
-PGCONFIG=@PGCONFIG@
-PG_LIBDIR=`$(PGCONFIG) --pkglibdir`
-
 CC=@CC@
 CFLAGS=-I `$(PGCONFIG) --includedir` -I `$(PGCONFIG) --includedir-server`  -fpic -shared
 LIBS=-L `$(PGCONFIG) --libdir`
 WARNINGS=-Wall -Wmissing-prototypes
-
+PGCONFIG=@PGCONFIG@
+PG_LIBDIR=`$(PGCONFIG) --pkglibdir`
 INSTDIR=`$(PGCONFIG) --pkglibdir`
-
+PG_LIBDIR=@PG_LIBDIR@
 
 SRC=facts.c
 
-all: facts.so
+all: facts.so install_funcs.sql
 
 facts.so: facts.c facts.h Makefile
 	$(CC) $(WARNINGS) $(CFLAGS) $(LIBS) -o facts.so $(SRC)
