@@ -12,6 +12,7 @@
 
 #include "executor/spi.h"
 #include "facts.h"
+#include <string.h>
 
 /* NOTE: This is new for Postgres >= 8.2 */
 #ifdef PG_MODULE_MAGIC
@@ -158,17 +159,13 @@ Datum
 facts_text2uri(PG_FUNCTION_ARGS)
 {
   text   *textin = PG_GETARG_TEXT_P(0);
-  Datum   result;
-  /* char	 *repr; x*/
+  text   *result;
   int	  len;
 
-
-  len = strlen(textin);
+  len = VARSIZE(textin) - VARHDRSZ;
   result = (text *) palloc(len + VARHDRSZ);
   VARATT_SIZEP(result) =   len + VARHDRSZ;
-  /* textin[len] = '\0'; */
-  memcpy(VARDATA(result), textin, len);
-  
+  memcpy(VARDATA(result), textin, len);  
   PG_RETURN_TEXT_P(result);
 }
 
@@ -190,19 +187,36 @@ facts_text2uri(PG_FUNCTION_ARGS)
 #define QUERY_FORGET \
           "DELETE FROM facts WHERE uri = $1 AND namespace = $2 AND name = $3"
 
+/*######################################################[ Resouce Deletion Support ]##*/
 
 #define QUERY_DELETE_RESOURCE \
           "DELETE FROM facts WHERE uri = $1"
 
 #define QUERY_DELETE_COLLECTION \
-          "DELETE FROM facts WHERE uri like $1"
+          "DELETE FROM facts WHERE uri like $1||'%'"
+
+/*#####################################################[ Resouce Copy/Move Support ]##*/
+
+#define QUERY_COPY_RESOURCE \
+          "HONK! DELETE FROM facts WHERE uri = $1"
+
+#define QUERY_COPY_COLLECTION \
+          "HONK! DELETE FROM facts WHERE uri like $1||'%'"
+
+#define QUERY_MOVE_RESOURCE \
+          "HONK! DELETE FROM facts WHERE uri = $1"
+
+#define QUERY_MOVE_COLLECTION \
+          "HONK! DELETE FROM facts WHERE uri like $1||'%'"
+
 
 /* NOTE: we use an explicit field name in the following query to save us
  * the touble of calling SPI_fnumber during each step of the cursor batch
  * processing.
  */
+
 #define QUERY_FIND_SELF_OR_CHILDREN \
-          "SELECT uri FROM facts WHERE uri = $1 " 
+          "SELECT uri FROM facts WHERE uri LIKE $1||'%' " 
 
 
 PG_FUNCTION_INFO_V1(facts_assert);
@@ -238,7 +252,9 @@ facts_assert(PG_FUNCTION_ARGS)
 	elog(ERROR, "function facts: SPI_saveplan returned %d", SPI_result);
 	goto FINISH;
       }
+#ifndef NDEBUG
       elog(NOTICE, "Saved query_find plan for function assert()");
+#endif
       find_plan = SPI_saveplan(pl);
     }
   if(!insert_plan)
@@ -250,7 +266,9 @@ facts_assert(PG_FUNCTION_ARGS)
 	elog(ERROR, "function facts: SPI_saveplan returned %d", SPI_result);
 	goto FINISH;
       }
+#ifndef NDEBUG
       elog(NOTICE, "Saved query_insert plan for function assert()");
+#endif
       insert_plan = SPI_saveplan(pl);
     }
   if(!update_plan)
@@ -262,7 +280,9 @@ facts_assert(PG_FUNCTION_ARGS)
 	elog(ERROR, "function facts: SPI_saveplan returned %d", SPI_result);
 	goto FINISH;
       }
+#ifndef NDEBUG
       elog(NOTICE, "Saved query_update plan for function assert()");
+#endif
       update_plan = SPI_saveplan(pl);
     }
 
@@ -271,7 +291,7 @@ facts_assert(PG_FUNCTION_ARGS)
    * fact in the database.
    */
 
-  res = SPI_execp(find_plan, values, "____", 0);
+  res = SPI_execute_plan(find_plan, values, "____", true, 0);
   if (res != SPI_OK_SELECT) {
     elog(ERROR, "function facts: could not check fact. SPI_exep returned %d", res);
     goto FINISH;
@@ -281,12 +301,16 @@ facts_assert(PG_FUNCTION_ARGS)
   switch(SPI_processed) {
   case 0:   /* Nothing similar found -> insert new fact */
     res = SPI_execp(insert_plan, values, "____", 0);
+#ifndef NDEBUG
     elog(NOTICE, "Inserting fact ...");
+#endif
     goto FINISH;
     break;
   case 1:   /* Similar fact found -> update found fact */
     res = SPI_execp(update_plan, values, "____", 0);
+#ifndef NDEBUG
     elog(NOTICE, "Updating fact ...");
+#endif
     goto FINISH;
     break;
   default: /* More than one fact? Gosh! */
@@ -331,7 +355,9 @@ facts_forget(PG_FUNCTION_ARGS)
 	elog(ERROR, "function facts: SPI_saveplan returned %d", SPI_result);
 	goto FINISH;
       }
+#ifndef NDEBUG
       elog(NOTICE, "Saved query_delete plan for function assert()");
+#endif
       delete_plan = SPI_saveplan(pl);
     }
   
@@ -359,11 +385,13 @@ facts_delete_resource(PG_FUNCTION_ARGS)
 
   if(PG_ARGISNULL(0)) {
       elog(ERROR, "function delete_resource(): Can not remove NULL resource");
+      goto FINISH;
   }
   
   if(SPI_connect() != SPI_OK_CONNECT)
   {
       elog(ERROR, "function facts:remove_Resource: SPI_connect failed");
+      goto FINISH;
   }
 
   if(!delete_resource_plan)
@@ -375,7 +403,9 @@ facts_delete_resource(PG_FUNCTION_ARGS)
           elog(ERROR, "function facts:delete_resource(): SPI_saveplan returned %d", SPI_result);
           goto FINISH;
       }
+#ifndef NDEBUG
       elog(NOTICE, "Saved query_delete plan for function delete_resource()");
+#endif
       delete_resource_plan = SPI_saveplan(pl);
   }
 
@@ -388,14 +418,20 @@ facts_delete_resource(PG_FUNCTION_ARGS)
           elog(ERROR, "function facts:delete_collection(): SPI_saveplan returned %d", SPI_result);
           goto FINISH;
       }
+#ifndef NDEBUG
       elog(NOTICE, "Saved query_delete plan for function delete_collection()");
+#endif
       delete_collection_plan = SPI_saveplan(pl);
   }
 
   values[0] = PG_GETARG_DATUM(0);
   uri = PG_GETARG_TEXT_P(0);
 
-  /* Test for resource/collection-ness */
+  /* Test for resource/collection-ness NOTA BENE: here we depend on the
+   * resource ID (URI) of collections to end with a forward slash. AFAIK this
+   * can be safely assumed at this poin.
+   */
+
   { 
       char* tvalue;
       size_t tv_length;
@@ -404,8 +440,11 @@ facts_delete_resource(PG_FUNCTION_ARGS)
       tv_length = VARSIZE(uri) - VARHDRSZ;
       if (tvalue[tv_length-1] == '/')
       {
-          elog(ERROR, "function facts:delete_resource(): cannot delete collections!");
-          goto FINISH;
+          res = SPI_execp(delete_collection_plan, values, "____", 0);
+      }
+      else  /* it's a simple resource */
+      {
+          res = SPI_execp(delete_resource_plan, values, "____", 0);
       }
   }
   
@@ -424,7 +463,9 @@ facts_delete_resource(PG_FUNCTION_ARGS)
       }
     goto FINISH;
   } else {
-      elog(WARNING, "function delete_resource(): deleted %d facts for resource.", SPI_processed);
+#ifndef NDEBUG
+      elog(NOTICE, "function delete_resource(): deleted %d facts for resource.", SPI_processed);
+#endif
   }
   
   
@@ -433,9 +474,6 @@ facts_delete_resource(PG_FUNCTION_ARGS)
   PG_RETURN_NULL();
 }
 
-
-
-/*
 
 /* Move a resource (and all it's children if the resource is a collection */
 extern Datum facts_move_all(PG_FUNCTION_ARGS);
@@ -468,7 +506,9 @@ facts_move_all(PG_FUNCTION_ARGS)
 	elog(ERROR, "function move: SPI_saveplan returned %d", SPI_result);
 	goto FINISH;
       }
+#ifndef NDEBUG
       elog(NOTICE, "Saved query_delete plan for function move(src, dest)");
+#endif
       pos_plan = SPI_saveplan(pos_plan);
     }
   
@@ -501,8 +541,9 @@ facts_move_all(PG_FUNCTION_ARGS)
 		  sprintf(buf, "moving '%s'", uri);
 		  if(uri)
 		    pfree(uri);
-		  
+#ifndef NDEBUG 
 		  elog (NOTICE, "EXECQ: %s", buf);
+#endif
 		}
 	    }
 	} while ( proc > 0);

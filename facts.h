@@ -22,4 +22,4 @@ Datum facts_text2uri (PG_FUNCTION_ARGS);
 
 Datum facts_assert(PG_FUNCTION_ARGS);
 Datum facts_forget(PG_FUNCTION_ARGS);
-//Datum facts_delete_resource(PG_FUNCTION_ARGS)
+Datum facts_delete_resource(PG_FUNCTION_ARGS);

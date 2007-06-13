@@ -12,7 +12,7 @@
 #
 PREFIX=@PREFIX@
 CC=@CC@
-CFLAGS=-I `$(PGCONFIG) --includedir` -I `$(PGCONFIG) --includedir-server`  -fpic -shared
+CFLAGS+=-I `$(PGCONFIG) --includedir` -I `$(PGCONFIG) --includedir-server`  -fpic -shared
 LIBS=-L `$(PGCONFIG) --libdir`
 WARNINGS=-Wall -Wmissing-prototypes
 PGCONFIG=@PGCONFIG@
@@ -28,9 +28,12 @@ facts.so: facts.c facts.h Makefile
 	$(CC) $(WARNINGS) $(CFLAGS) $(LIBS) -o facts.so $(SRC)
 
 install: dso
-	install -D -o postgres facts.so $(INSTDIR)/facts.so
+	install -D -o postgres facts.so $(DESTDIR)/$(INSTDIR)/facts.so
 
 dso: facts.so
 
 clean: 
-	-rm *.so *.o
+	-rm *.so
+
+distclean: clean
+	-rm config.guess  config.log  config.status  config.sub 
