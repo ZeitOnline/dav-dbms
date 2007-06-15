@@ -1,0 +1,7 @@
+cms-backend (0.3.0-alpha1) unstable; urgency=low
+
+  * Initial Debianisation
+  * Added preliminary support for property DELETE.
+
+ -- Ralf Mattes <rm@mh-freiburg.de>  Wed, 13 Jun 2007 12:48:01 +0200
+
