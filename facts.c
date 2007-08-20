@@ -197,6 +197,7 @@ facts_text2uri(PG_FUNCTION_ARGS)
 
 /*#####################################################[ Resouce Copy/Move Support ]##*/
 
+
 #define QUERY_COPY_RESOURCE \
           "HONK! DELETE FROM facts WHERE uri = $1"
 
@@ -213,6 +214,9 @@ facts_text2uri(PG_FUNCTION_ARGS)
 /* NOTE: we use an explicit field name in the following query to save us
  * the touble of calling SPI_fnumber during each step of the cursor batch
  * processing.
+ * FIXME: This is tricky since the following query only makes sense when the
+ * given parameter is a _collection_ uri. Otherwise we might get false
+ * positives.
  */
 
 #define QUERY_FIND_SELF_OR_CHILDREN \
