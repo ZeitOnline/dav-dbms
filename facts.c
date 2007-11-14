@@ -40,7 +40,8 @@ facts_uri_in(PG_FUNCTION_ARGS)
 
   len = strlen(inputText);
   result = (text *) palloc(len + VARHDRSZ);
-  VARATT_SIZEP(result) =   len + VARHDRSZ;
+  // NOT WORKING IN 8.3: VARATT_SIZEP(result) =   len + VARHDRSZ;
+  SET_VARSIZE(result, len);
   inputText[len] = '\0';
   memcpy(VARDATA(result), inputText, len);
   
@@ -145,7 +146,8 @@ facts_uri2text(PG_FUNCTION_ARGS)
 
   result = palloc(len);
 
-  VARATT_SIZEP(result) = len;
+  //Not working in 8.3:  VARATT_SIZEP(result) = len;
+  SET_VARSIZE(result, len);
   memmove(VARDATA(result), str, (len - VARHDRSZ));
   pfree(str);
 
@@ -164,7 +166,8 @@ facts_text2uri(PG_FUNCTION_ARGS)
 
   len = VARSIZE(textin) - VARHDRSZ;
   result = (text *) palloc(len + VARHDRSZ);
-  VARATT_SIZEP(result) =   len + VARHDRSZ;
+  //Not working in 8.3:  VARATT_SIZEP(result) =   len + VARHDRSZ;
+  SET_VARSIZE(result, len);
   memcpy(VARDATA(result), textin, len);  
   PG_RETURN_TEXT_P(result);
 }
