@@ -1,3 +1,9 @@
+cms-backend (0.3.2-alpha1zeit1) hardy; urgency=low
+
+  * Updated for PostgreSQL 8.3
+
+ -- R. Mattes <rm@seid-online.de>  Sun, 01 Jun 2008 23:07:09 +0200
+
 cms-backend (0.3.1-alpha1zeit1) gutsy; urgency=low
 
   * Modified build proccess to build for 8.3 as well.

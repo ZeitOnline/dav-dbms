@@ -80,8 +80,8 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs 
-	dh_installdocs -a
-	dh_installexamples
+	dh_installdocs -A -X.svn -X.in
+# 	dh_installexamples
 #	dh_install
 #	dh_installmenu
 #	dh_installdebconf	

@@ -9,12 +9,12 @@ SET autocommit TO 'on';
 
 CREATE OR REPLACE FUNCTION facts_uri_in(opaque)
   RETURNS facts_uri
-  AS '/usr/lib/postgresql/8.2/lib/facts.so', 'facts_uri_in'
+  AS '/usr/lib/postgresql/8.3/lib/facts.so', 'facts_uri_in'
   LANGUAGE 'C';
 
 CREATE OR REPLACE FUNCTION facts_uri_out(opaque)
   RETURNS cstring
-  AS '/usr/lib/postgresql/8.2/lib/facts.so', 'facts_uri_out'
+  AS '/usr/lib/postgresql/8.3/lib/facts.so', 'facts_uri_out'
   LANGUAGE 'C';
 
  -- Typecasts
@@ -37,12 +37,12 @@ COMMENT ON TYPE facts_uri IS
  -- Comparison/Indexing
 CREATE OR REPLACE FUNCTION facts_uri_eq(facts_uri, facts_uri)
   RETURNS bool
-  AS '/usr/lib/postgresql/8.2/lib/facts.so', 'facts_uri_eq'
+  AS '/usr/lib/postgresql/8.3/lib/facts.so', 'facts_uri_eq'
   LANGUAGE 'C';
 
 CREATE OR REPLACE FUNCTION facts_uri_is_parent_or_self(facts_uri, facts_uri)
   RETURNS bool
-  AS '/usr/lib/postgresql/8.2/lib/facts.so', 'is_parent_or_self'
+  AS '/usr/lib/postgresql/8.3/lib/facts.so', 'is_parent_or_self'
   LANGUAGE 'C';
 
 CREATE OPERATOR = (
@@ -79,27 +79,27 @@ CREATE OPERATOR ~~ (
 
 CREATE OR REPLACE FUNCTION assert(text, text, text, text) 
   RETURNS bool
-  AS '/usr/lib/postgresql/8.2/lib/facts.so', 'facts_assert'
+  AS '/usr/lib/postgresql/8.3/lib/facts.so', 'facts_assert'
   LANGUAGE 'C' STABLE;
 
 CREATE OR REPLACE FUNCTION forget(text, text, text) 
   RETURNS bool
-  AS '/usr/lib/postgresql/8.2/lib/facts.so', 'facts_forget'
+  AS '/usr/lib/postgresql/8.3/lib/facts.so', 'facts_forget'
   LANGUAGE 'C' STABLE;
 
 CREATE OR REPLACE FUNCTION delete_resource(text) 
   RETURNS bool
-  AS '/usr/lib/postgresql/8.2/lib/facts.so', 'facts_delete_resource'
+  AS '/usr/lib/postgresql/8.3/lib/facts.so', 'facts_delete_resource'
   LANGUAGE 'C';
  
 CREATE OR REPLACE FUNCTION move(text, text) 
   RETURNS bool
-  AS '/usr/lib/postgresql/8.2/lib/facts.so', 'facts_move_all'
+  AS '/usr/lib/postgresql/8.3/lib/facts.so', 'facts_move_all'
   LANGUAGE 'C' STABLE;
 
 CREATE OR REPLACE FUNCTION is_parent_or_self(text, text) 
   RETURNS bool
-  AS '/usr/lib/postgresql/8.2/lib/facts.so', 'is_parent_or_self'
+  AS '/usr/lib/postgresql/8.3/lib/facts.so', 'is_parent_or_self'
   LANGUAGE 'C'
   WITH (iscachable); 
 
