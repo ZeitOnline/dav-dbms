@@ -1,3 +1,15 @@
+cms-backend (0.4.0-zeit1) unstable; urgency=low
+
+  * Fixed location of postgres libraries.
+
+  * Fixed build dependencies
+  
+  * Fixed runtime dependencies
+  
+  * Missing generation of create_dbm.sql (Closes: #6783).
+
+ -- Ralf Mattes <rm@seid-online.de>  Tue, 26 Jan 2010 12:28:25 +0100
+
 cms-backend (0.3.2-alpha1zeit1) hardy; urgency=low
 
   * Updated for PostgreSQL 8.3

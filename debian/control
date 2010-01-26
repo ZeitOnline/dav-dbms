@@ -2,13 +2,13 @@ Source: cms-backend
 Section: web
 Priority: optional
 Maintainer: R. Mattes <rm@seid-online.de>
-Build-Depends: debhelper (>= 4.0.0), gcc, postgresql-server-dev-8.3 | postgresql-server-dev-8.2 | postgresql-server-dev-8.1, postgresql-8.3 
+Build-Depends: debhelper (>= 4.0.0), gcc, postgresql-server-dev-8.4 | postgresql-server-dev-8.3 | postgresql-server-dev-8.2
 Standards-Version: 3.7.2 
 
 Package: cms-backend
 Architecture: any
 Suggests: dav-cms-backend
-Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Depends: ${shlibs:Depends}, ${misc:Depends}, postgresql-8.2 | postgresql-8.3 | postgresql-8.4
 Description: PostgreSQL backend functions for the Zeit-CMS.
  This package provides a set of PostgreSQL backend functions for the Zeit-CMS
  as well as some SQL files to install these functions into a CMS backend instance.
