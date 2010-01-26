@@ -1,4 +1,4 @@
--- Filespec: $Id$
+-- Filespec: $Id: create_dbm.sql 23 2007-06-15 12:18:26Z rmattes $
 -- 
 -- $$LICENCE$$
 -- This script generates the database structures to
@@ -31,7 +31,7 @@ COMMIT;
 
 CREATE FUNCTION "plpgsql_call_handler" () 
   RETURNS opaque 
-  AS '/usr/lib/postgresql/8.2/lib/plpgsql.so', 'plpgsql_call_handler' 
+  AS '@PG_LIBDIR@/plpgsql.so', 'plpgsql_call_handler' 
   LANGUAGE 'C';
 
 CREATE LANGUAGE plpgsql

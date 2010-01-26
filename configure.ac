@@ -44,5 +44,5 @@ PG_LIBDIR=`$PGCONFIG --pkglibdir`
 AC_MSG_NOTICE([Extension will be installed into $PG_LIBDIR])
 
 AC_SUBST(PG_LIBDIR)
-AC_CONFIG_FILES([Makefile SQL/install_funcs.sql])
+AC_CONFIG_FILES([Makefile SQL/install_funcs.sql SQL/create_dbm.sql])
 AC_OUTPUT
