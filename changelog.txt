@@ -1,0 +1,100 @@
+2007-06-13 [r22]  rmattes:
+
+	* * Fixed compiler warnings for uri input function. * First version
+	  of working Debian build. R. Mattes
+
+2007-06-11 [r21]  rmattes:
+
+	* Added first level of DELETE/MOVE/COPY support. Note: All these
+	  will trigger operations on facts during the _Logging Phase_ of
+	  Apche2, i.e. outside of the request's transaction context. This
+	  is slightly dangerous! (But I can't come up with a better
+	  solution right now). R. Mattes
+
+2007-06-07 [r20]  rmattes:
+
+	* More autoconf stuff. R. Mattes
+
+2007-06-07 [r19]  rmattes:
+
+	* First changes to autoconf (and Debianization) R. Mattes
+
+2007-05-31 [r18]  rmattes:
+
+	* Added header magic to module so loading won't break for
+	  Postgresql 8.2 and later. Modified SQL statements. TODO: we need
+	  a configure script to adapt to different Postgresql versions.
+	  Ralf Mattes
+
+2006-07-26 [r17]  rmattes:
+
+	* Added creation of trigger table to create_dbm.sql. Why was this
+	  never commited but running in production? Ralf Mattes
+
+2006-07-26 [r16]  rmattes:
+
+	* ATTENTION: Modified API for SPI_cirsor_open! Fixed in trunk.
+	  Please adapt branches as well. (Currently unused code -- we don't
+	  usually move resources). R. Mattes
+
+2003-06-04 [r15]  tomas:
+
+	* Minor SQL script tweaking
+
+2003-06-04 [r14]  tomas:
+
+	* Cosmetic changes to make (unused) code compilable
+
+2003-06-03 [r13]  rmattes:
+
+	* see last entry.
+
+2003-06-03 [r12]  rmattes:
+
+	* Extended datatype facts_uri
+
+2003-06-03 [r11]  rmattes:
+
+	* Added support for indexing datatype 'facts_uri' and added first
+	  support functions for GIST indexing.
+
+2003-06-03 [r10]  rmattes:
+
+	* Added file 'create_indices.sql'. Added CVS $Id$ tags to all
+	  source files. R. Mattes
+
+2003-06-03 [r9]  tomas:
+
+	* Create language plpgsql was missing
+
+2003-06-02 [r8]  tomas:
+
+	* Added PostgreSQL include directory (besides server include dir)
+
+2002-11-01 [r7]  rmattes:
+
+	* Modified Makefile (according to the new instructions on the
+	  PostgreSQL developer website).
+
+2002-06-13 [r6]  rmattes:
+
+	* Changed Makefile and rewote install_funcs.sql.
+
+2002-06-13 [r5]  rmattes:
+
+	* Added installer file.
+
+2002-06-07 [r4]  rmattes:
+
+	* Fixed numerous namespace issues. Started to clean up code.
+
+2002-06-02 [r3]  rmattes:
+
+	* Added Makefile. Moved function 'assert()' to C-code (file
+	  'facts.c').
+
+2002-06-02 [r2]  rmattes:
+
+	* Added cre?\012te_dbm.sql file. This script will attempt to create
+	  the dbm strucutre neccessary to hold cms meta-information.
+
