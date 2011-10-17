@@ -35,15 +35,6 @@ DROP INDEX all_values_idx;
 CREATE INDEX all_values_idx
   ON facts USING btree (uri, namespace, name);
 
--- Fuzzy text indices are great! 
-DROP INDEX all_fuzzy_idx;
-
-CREATE INDEX all_fuzzy_idx ON facts (uri text_pattern_ops, namespace, name , value text_pattern_ops);
-
-DROP INDEX fuzzy_uri;
-
-CREATE INDEX fuzzy_uri ON facts(uri text_pattern_ops);
-
 -- Cluster database on index
 
 CLUSTER full_btree_idx on facts;
