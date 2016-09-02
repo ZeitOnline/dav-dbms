@@ -4,7 +4,7 @@
 
 DROP INDEX value_hash_idx;
 
-CREATE INDEX value_hash_idx 
+CREATE INDEX value_hash_idx
   ON facts USING hash (value);
 
 -- Unfortunately PostgreSQL currently doesn't support
@@ -17,15 +17,15 @@ CREATE INDEX value_hash_idx
 
 DROP INDEX name_btree_idx;
 
-CREATE INDEX name_btree_idx 
+CREATE INDEX name_btree_idx
   ON facts USING btree (namespace, name);
 
 -- Reverse map a property to a URI:
 
-DROP INDEX full_btree_idx;
+DROP INDEX prop_val_to_uri;
 
-CREATE INDEX full_btree_idx
-  ON facts USING btree (namespace, name,value);
+CREATE INDEX prop_val_to_uri
+    ON facts USING btree (namespace, name, value) WHERE namespace <> 'http://namespaces.zeit.de/CMS/tagging'::text;
 
 -- This index speeds up queries for all values for
 -- a given URI/property
@@ -38,3 +38,8 @@ CREATE INDEX all_values_idx
 -- Cluster database on index
 
 CLUSTER full_btree_idx on facts;
+
+DROP INDEX events_by_logdate;
+
+CREATE INDEX CONCURRENTLY events_by_logdate
+  ON triggers USING btree (logdate) ;
