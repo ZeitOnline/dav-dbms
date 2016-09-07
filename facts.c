@@ -11,6 +11,8 @@
  */
 
 #include "postgres.h"
+#include "catalog/pg_type.h"
+#include "utils/builtins.h"
 #include "executor/spi.h"
 #include "facts.h"
 #include <string.h>
