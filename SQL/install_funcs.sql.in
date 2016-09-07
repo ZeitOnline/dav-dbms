@@ -46,8 +46,8 @@ CREATE OR REPLACE FUNCTION facts_uri_is_parent_or_self(facts_uri, facts_uri)
   LANGUAGE 'C';
 
 CREATE OPERATOR = (
-  LEFTARG    = facts_uri, 
-  RIGHTARG   = facts_uri, 
+  LEFTARG    = facts_uri,
+  RIGHTARG   = facts_uri,
   PROCEDURE  = facts_uri_eq,
   COMMUTATOR = '=',
   NEGATOR = '<>',
@@ -57,8 +57,8 @@ CREATE OPERATOR = (
 );
 
 CREATE OPERATOR <> (
-  LEFTARG    = facts_uri, 
-  RIGHTARG   = facts_uri, 
+  LEFTARG    = facts_uri,
+  RIGHTARG   = facts_uri,
   PROCEDURE  = facts_uri_neq,
   COMMUTATOR = '<>',
   NEGATOR    = '='
@@ -67,8 +67,8 @@ CREATE OPERATOR <> (
 );
 
 CREATE OPERATOR ~~ (
-  LEFTARG    = facts_uri, 
-  RIGHTARG   = facts_uri, 
+  LEFTARG    = facts_uri,
+  RIGHTARG   = facts_uri,
   PROCEDURE  = facts_uri_is_parent_or_self
 --  COMMUTATOR = '<>',
 --  NEGATOR    = '='
@@ -77,34 +77,34 @@ CREATE OPERATOR ~~ (
 );
 
 
-CREATE OR REPLACE FUNCTION assert(text, text, text, text) 
+CREATE OR REPLACE FUNCTION assert(text, text, text, text)
   RETURNS bool
   AS '@PG_LIBDIR@/facts.so', 'facts_assert'
   LANGUAGE 'C' STABLE;
 
-CREATE OR REPLACE FUNCTION forget(text, text, text) 
+CREATE OR REPLACE FUNCTION forget(text, text, text)
   RETURNS bool
   AS '@PG_LIBDIR@/facts.so', 'facts_forget'
   LANGUAGE 'C' STABLE;
 
-CREATE OR REPLACE FUNCTION delete_resource(text) 
+CREATE OR REPLACE FUNCTION delete_resource(text)
   RETURNS bool
   AS '@PG_LIBDIR@/facts.so', 'facts_delete_resource'
   LANGUAGE 'C';
- 
-CREATE OR REPLACE FUNCTION move(text, text) 
+
+CREATE OR REPLACE FUNCTION move(text, text)
   RETURNS bool
   AS '@PG_LIBDIR@/facts.so', 'facts_move_all'
   LANGUAGE 'C' STABLE;
 
-CREATE OR REPLACE FUNCTION is_parent_or_self(text, text) 
+CREATE OR REPLACE FUNCTION is_parent_or_self(text, text)
   RETURNS bool
   AS '@PG_LIBDIR@/facts.so', 'is_parent_or_self'
   LANGUAGE 'C'
-  WITH (iscachable); 
+  WITH (iscachable);
 
 
-CREATE OR REPLACE FUNCTION trigger_delete () 
+CREATE OR REPLACE FUNCTION trigger_delete ()
 RETURNS trigger AS '
  BEGIN
    IF (NEW.method = ''DELETE'') THEN

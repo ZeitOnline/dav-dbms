@@ -6,7 +6,7 @@
 # Licence: GPL
 #
 
-AC_PREREQ(2.57) 
+AC_PREREQ(2.57)
 AC_INIT([facts],[0.2], [rm (at) seid-online (dot) de])
 AC_CONFIG_SRCDIR([facts.c])
 # AC_CONFIG_HEADER([config.h])
@@ -27,7 +27,7 @@ AC_C_CONST
 
 AC_ARG_WITH(pg_config,
     AS_HELP_STRING(--with-pg_config=PATH,/path/to/pg_config),
-    [ AC_PATH_PROGS(PGCONFIG, [pg_config], "notfound", "$withval:$PATH") ], 
+    [ AC_PATH_PROGS(PGCONFIG, [pg_config], "notfound", "$withval:$PATH") ],
     [ AC_PATH_PROGS(PGCONFIG, [pg_config], "notfound", "/usr/local/apache/bin:/usr/local/bin:/usr/sbin:$PATH")])
 
 if test "x$PGCONFIG" = "xnotfound" ; then

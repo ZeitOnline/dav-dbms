@@ -51,7 +51,7 @@ build-stamp:  config.status
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp 
+	rm -f build-stamp
 	-$(MAKE) distclean
 ifneq "$(wildcard /usr/share/misc/config.sub)" ""
 	cp -f /usr/share/misc/config.sub config.sub
@@ -61,15 +61,15 @@ ifneq "$(wildcard /usr/share/misc/config.guess)" ""
 endif
 
 
-	dh_clean 
+	dh_clean
 
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k 
+	dh_clean -k
 	dh_installdirs
 	dh_install
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/$(PACKAGE)	
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/$(PACKAGE)
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -79,12 +79,12 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs 
+	dh_installchangelogs
 	dh_installdocs -A -X.svn -X.in
 # 	dh_installexamples
 #	dh_install
 #	dh_installmenu
-#	dh_installdebconf	
+#	dh_installdebconf
 #	dh_installlogrotate
 #	dh_installcron
 #	dh_installinfo
@@ -103,4 +103,4 @@ binary: binary-indep binary-arch
 
 distclean:
 	echo Ups
-.PHONY: build clean binary-indep binary-arch binary install 
+.PHONY: build clean binary-indep binary-arch binary install

@@ -3,7 +3,7 @@ Section: web
 Priority: optional
 Maintainer: R. Mattes <rm@seid-online.de>
 Build-Depends: debhelper (>= 4.0.0), gcc, postgresql-server-dev-9.1 | postgresql-server-dev-8.4 | postgresql-server-dev-8.3
-Standards-Version: 3.7.2 
+Standards-Version: 3.7.2
 
 Package: cms-backend
 Architecture: any

@@ -1,0 +1,2 @@
+This package provides a set of PostgreSQL backend functions for the Zeit-CMS
+as well as some SQL files to install these functions into a CMS backend instance.

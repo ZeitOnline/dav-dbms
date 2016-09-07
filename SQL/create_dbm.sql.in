@@ -1,5 +1,5 @@
 -- Filespec: $Id: create_dbm.sql 23 2007-06-15 12:18:26Z rmattes $
--- 
+--
 -- $$LICENCE$$
 -- This script generates the database structures to
 -- handle the CMS resource database.
@@ -10,7 +10,7 @@
 -- Install: as database owner:
 --   psql -E -e -f create_dbm.sql template1
 --
--- Version: 
+-- Version:
 
 -----------------------------------------------------------------[ BASE DATABASE ]--
 
@@ -29,9 +29,9 @@ COMMIT;
 -- We need PL/SQL (this might fail in case the PL/SQL
 -- language is allready installed).
 
-CREATE FUNCTION "plpgsql_call_handler" () 
-  RETURNS opaque 
-  AS '@PG_LIBDIR@/plpgsql.so', 'plpgsql_call_handler' 
+CREATE FUNCTION "plpgsql_call_handler" ()
+  RETURNS opaque
+  AS '@PG_LIBDIR@/plpgsql.so', 'plpgsql_call_handler'
   LANGUAGE 'C';
 
 CREATE LANGUAGE plpgsql
@@ -64,11 +64,11 @@ CREATE TABLE "triggers" (
 -- forget(uri, namespace, name, value) -> bool
 -- Forget a fact about a resource. The return value indicates
 -- whether a fact was indeed known to the dbm.
- 
+
 DROP FUNCTION forget(text, text, text, text);
 
 CREATE FUNCTION forget(text, text, text, text) RETURNS bool AS'
-  DECLARE 
+  DECLARE
     p_uri       ALIAS FOR $1;
     p_namespace ALIAS FOR $2;
     p_name      ALIAS FOR $3;
@@ -82,7 +82,7 @@ CREATE FUNCTION forget(text, text, text, text) RETURNS bool AS'
             name      = p_name AND
             value     = p_value;
     -- FIXME: how to test for successfull deletition
-    IF NOT FOUND THEN 
+    IF NOT FOUND THEN
       result := ''F'';
     END IF;
     RETURN result;

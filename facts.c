@@ -1,15 +1,16 @@
 /* Filespec: $Id$ */
 
-/* FIXME: 
+/* FIXME:
  * - declare facts_uri datatype as TOASTabel (
  * - use pg_detoast_datum() on all arguments that are facts_uri
  */
 
-/*  
+/*
  * $$LICENCE$$
  *
  */
 
+#include "postgres.h"
 #include "executor/spi.h"
 #include "facts.h"
 #include <string.h>
@@ -27,7 +28,7 @@ PG_MODULE_MAGIC;
 /* This is void* but we want to distinguish it here */
 typedef void *pg_plan;
 
-/* Read a facts_uri 
+/* Read a facts_uri
  */
 PG_FUNCTION_INFO_V1(facts_uri_in);
 Datum
@@ -40,12 +41,12 @@ facts_uri_in(PG_FUNCTION_ARGS)
 
   len = strlen(inputText);
   result = (text *) palloc(len + VARHDRSZ);
-  // NOT WORKING IN 8.3: 
+  // NOT WORKING IN 8.3:
   //VARATT_SIZEP(result) =   len + VARHDRSZ;
   SET_VARSIZE(result, len);
   inputText[len] = '\0';
   memcpy(VARDATA(result), inputText, len);
-  
+
   PG_RETURN_TEXT_P(result);
 }
 
@@ -66,22 +67,22 @@ facts_uri_out(PG_FUNCTION_ARGS)
 	PG_RETURN_CSTRING(result);
 }
 
-/* Compare two URIs 
+/* Compare two URIs
  * For now we just compare the string representation.
  * NOTE: do we need to check for NULL values?
  */
 PG_FUNCTION_INFO_V1(facts_uri_eq);
-Datum 
+Datum
 facts_uri_eq(PG_FUNCTION_ARGS)
 {
   size_t   lenl, lenr;
   text    *l, *r;
   char    *left, *right;
   int      res  = 0;
-  
+
   l = PG_GETARG_TEXT_P(0);
   r = PG_GETARG_TEXT_P(1);
-  
+
   lenl  = VARSIZE(l) - VARHDRSZ;
   lenr  = VARSIZE(r) - VARHDRSZ;
   left  = VARDATA(l);
@@ -89,43 +90,43 @@ facts_uri_eq(PG_FUNCTION_ARGS)
 
   if (lenl != lenr)
     PG_RETURN_BOOL(0);
-  
+
   res = strncmp(left, right, lenl);
-  if(res)  
+  if(res)
     PG_RETURN_BOOL(0);
   PG_RETURN_BOOL(1);
 }
 
 PG_FUNCTION_INFO_V1(facts_uri_neq);
-Datum 
+Datum
 facts_uri_neq(PG_FUNCTION_ARGS)
 {
   PG_RETURN_BOOL(1);
 }
 
 PG_FUNCTION_INFO_V1(facts_uri_lt);
-Datum 
+Datum
 facts_uri_lt(PG_FUNCTION_ARGS)
 {
   PG_RETURN_BOOL(1);
 }
 
 PG_FUNCTION_INFO_V1(facts_uri_le);
-Datum 
+Datum
 facts_uri_le(PG_FUNCTION_ARGS)
 {
   PG_RETURN_BOOL(1);
 }
 
 PG_FUNCTION_INFO_V1(facts_uri_gt);
-Datum 
+Datum
 facts_uri_gt(PG_FUNCTION_ARGS)
 {
   PG_RETURN_BOOL(1);
 }
 
 PG_FUNCTION_INFO_V1(facts_uri_ge);
-Datum 
+Datum
 facts_uri_ge(PG_FUNCTION_ARGS)
 {
   PG_RETURN_BOOL(1);
@@ -133,7 +134,7 @@ facts_uri_ge(PG_FUNCTION_ARGS)
 
 /* Convert facts_uri -> text */
 PG_FUNCTION_INFO_V1(facts_uri2text);
-Datum 
+Datum
 facts_uri2text(PG_FUNCTION_ARGS)
 {
   Datum	    uri = PG_GETARG_DATUM(0);
@@ -147,7 +148,7 @@ facts_uri2text(PG_FUNCTION_ARGS)
 
   result = palloc(len);
 
-  //Not working in 8.3:  
+  //Not working in 8.3:
   //VARATT_SIZEP(result) = len;
   SET_VARSIZE(result, len);
   memmove(VARDATA(result), str, (len - VARHDRSZ));
@@ -168,10 +169,10 @@ facts_text2uri(PG_FUNCTION_ARGS)
 
   len = VARSIZE(textin) - VARHDRSZ;
   result = (text *) palloc(len + VARHDRSZ);
-  //Not working in 8.3:  
+  //Not working in 8.3:
   //VARATT_SIZEP(result) =   len + VARHDRSZ;
   SET_VARSIZE(result, len);
-  memcpy(VARDATA(result), textin, len);  
+  memcpy(VARDATA(result), textin, len);
   PG_RETURN_TEXT_P(result);
 }
 
@@ -226,7 +227,7 @@ facts_text2uri(PG_FUNCTION_ARGS)
  */
 
 #define QUERY_FIND_SELF_OR_CHILDREN \
-          "SELECT uri FROM facts WHERE uri LIKE $1||'%' " 
+          "SELECT uri FROM facts WHERE uri LIKE $1||'%' "
 
 
 PG_FUNCTION_INFO_V1(facts_assert);
@@ -327,7 +328,7 @@ facts_assert(PG_FUNCTION_ARGS)
     elog(ERROR, "function facts: multiple facts found (%d). Please repair.", SPI_processed);
     goto FINISH;
   }
-  
+
  FINISH:
   SPI_finish();
   PG_RETURN_NULL();
@@ -370,7 +371,7 @@ facts_forget(PG_FUNCTION_ARGS)
 #endif
       delete_plan = SPI_saveplan(pl);
     }
-  
+
   res = SPI_execp(delete_plan, values, "___", 0);
   if (res != SPI_OK_DELETE) {
     elog(ERROR, "function facts: could not forget fact. SPI_exep returned %d", res);
@@ -397,7 +398,7 @@ facts_delete_resource(PG_FUNCTION_ARGS)
       elog(ERROR, "function delete_resource(): Can not remove NULL resource");
       goto FINISH;
   }
-  
+
   if(SPI_connect() != SPI_OK_CONNECT)
   {
       elog(ERROR, "function facts:remove_Resource: SPI_connect failed");
@@ -407,7 +408,7 @@ facts_delete_resource(PG_FUNCTION_ARGS)
   if(!delete_resource_plan)
   {
       pg_plan pl;
-      
+
       pl = SPI_prepare(QUERY_DELETE_RESOURCE, 1, ctypes);
       if (pl == NULL) {
           elog(ERROR, "function facts:delete_resource(): SPI_saveplan returned %d", SPI_result);
@@ -422,7 +423,7 @@ facts_delete_resource(PG_FUNCTION_ARGS)
   if(!delete_collection_plan)
   {
       pg_plan pl;
-      
+
       pl = SPI_prepare(QUERY_DELETE_COLLECTION, 1, ctypes);
       if (pl == NULL) {
           elog(ERROR, "function facts:delete_collection(): SPI_saveplan returned %d", SPI_result);
@@ -442,10 +443,10 @@ facts_delete_resource(PG_FUNCTION_ARGS)
    * can be safely assumed at this poin.
    */
 
-  { 
+  {
       char* tvalue;
       size_t tv_length;
-      
+
       tvalue    = (char *) VARDATA(uri);
       tv_length = VARSIZE(uri) - VARHDRSZ;
       if (tvalue[tv_length-1] == '/')
@@ -457,11 +458,11 @@ facts_delete_resource(PG_FUNCTION_ARGS)
           res = SPI_execp(delete_resource_plan, values, "____", 0);
       }
   }
-  
+
   res = SPI_execp(delete_resource_plan, values, "____", 0);
-  if (res != SPI_OK_DELETE) {    
+  if (res != SPI_OK_DELETE) {
       switch (res) {
-      case SPI_ERROR_ARGUMENT: 
+      case SPI_ERROR_ARGUMENT:
           elog(ERROR, "function facts: could not check delete facts for resource. No plan or wrong count!");
           break;
       case SPI_ERROR_PARAM:
@@ -477,8 +478,8 @@ facts_delete_resource(PG_FUNCTION_ARGS)
       elog(NOTICE, "function delete_resource(): deleted %d facts for resource.", SPI_processed);
 #endif
   }
-  
-  
+
+
   FINISH:
   SPI_finish();
   PG_RETURN_NULL();
@@ -496,7 +497,7 @@ facts_move_all(PG_FUNCTION_ARGS)
   Datum           values[2];
   static pg_plan  pos_plan ;
   static Oid      ctypes[1] = {TEXTOID};
-  
+
   if(PG_ARGISNULL(0))
      elog(ERROR, "function move(): Can not move from NULL uri");
 
@@ -511,7 +512,7 @@ facts_move_all(PG_FUNCTION_ARGS)
   if(!pos_plan)
     {
       /* FIXME: what's the second param for */
-      pos_plan = SPI_prepare(QUERY_FIND_SELF_OR_CHILDREN, 1, ctypes); 
+      pos_plan = SPI_prepare(QUERY_FIND_SELF_OR_CHILDREN, 1, ctypes);
       if (pos_plan == NULL) {
 	elog(ERROR, "function move: SPI_saveplan returned %d", SPI_result);
 	goto FINISH;
@@ -521,7 +522,7 @@ facts_move_all(PG_FUNCTION_ARGS)
 #endif
       pos_plan = SPI_saveplan(pos_plan);
     }
-  
+
   values[0] = PG_GETARG_DATUM(0);
   values[1] = PG_GETARG_DATUM(1);
 
@@ -534,8 +535,8 @@ facts_move_all(PG_FUNCTION_ARGS)
       char buf[8192];
       char *uri;
       int  proc, i;
-      
-      do 
+
+      do
 	{
 	  SPI_cursor_fetch(cursor, 1, BATCHSIZE);
 	  proc     = SPI_processed;
@@ -551,7 +552,7 @@ facts_move_all(PG_FUNCTION_ARGS)
 		  sprintf(buf, "moving '%s'", uri);
 		  if(uri)
 		    pfree(uri);
-#ifndef NDEBUG 
+#ifndef NDEBUG
 		  elog (NOTICE, "EXECQ: %s", buf);
 #endif
 		}
@@ -564,8 +565,8 @@ facts_move_all(PG_FUNCTION_ARGS)
       elog(ERROR, "Couldn't open cursor to move resources");
       goto FINISH;
     }
-  
-  
+
+
  FINISH:
   SPI_finish();
   PG_RETURN_NULL();
@@ -573,7 +574,7 @@ facts_move_all(PG_FUNCTION_ARGS)
 
 
 /* is_parent_or_self: uri, uri -> bool
- * 
+ *
  */
 extern Datum is_parent_or_self(PG_FUNCTION_ARGS);
 
@@ -600,7 +601,7 @@ is_parent_or_self(PG_FUNCTION_ARGS)
       res = 0;
       goto OUT;
     }
-  
+
   for(;*uri && *self; uri++, self++)
     {
       last = uri;
@@ -618,9 +619,9 @@ is_parent_or_self(PG_FUNCTION_ARGS)
    *   else =4> +#f)
    * Buuut ... if the last char of 'uri' allready was a '/' this
    * will fail! So we need to test for the last seen character of
-   * uri as well in the default branch of the switch. 
+   * uri as well in the default branch of the switch.
    */
-  switch(*self) 
+  switch(*self)
     {
     case '/':
     case '\0':

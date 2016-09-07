@@ -8,7 +8,7 @@
 #   --configure           show options given to 'configure' script when
 #                         PostgreSQL was built
 #   --version             show the PostgreSQL version and exit
-# 
+#
 #
 PREFIX=@PREFIX@
 CC=@CC@
@@ -32,8 +32,8 @@ install: dso
 
 dso: facts.so
 
-clean: 
+clean:
 	-rm *.so
 
 distclean: clean
-	-rm config.guess  config.log  config.status  config.sub 
+	-rm config.guess  config.log  config.status  config.sub
