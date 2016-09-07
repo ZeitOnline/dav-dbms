@@ -1,0 +1,15 @@
+#!/bin/sh
+
+PSQL=/usr/bin/psql
+DB=cms
+USER=postgres
+
+PGOPTIONS='--client-min-messages=warning' $PSQL \
+    -X -q -a -1 -v ON_ERROR_STOP=1 --pset pager=off \
+    -d $DB -U $USER \
+    <<EOF
+
+DELETE FROM triggers
+  WHERE logdate < (now() - INTERVAL  '1 month')
+
+EOF

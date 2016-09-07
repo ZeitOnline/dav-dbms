@@ -1,0 +1,8 @@
+# This file configures some aspects of the cms-backend. The most
+# important value here is SERVER_MODE which can be one of MASTER or
+# SLAVE.
+
+
+SERVER_MODE=UNCONFIGURED
+
+

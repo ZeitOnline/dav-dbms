@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# R. Mattes
+# Mon, 15 Oct 2012 15:45:24 +0200
+# Purpose: run index cleanup once a day
+
+set -e
+set -u
+
+JOB=/var/lib/cms-backend/trigger-cleanup
+CONF=/etc/default/cms-backend
+SERVER_MODE=UNCONFIGURED
+
+[ -x $JOB ] || exit 0
+
+if  [ ! -e "$CONF" ];
+then
+    echo "No configuration found at $CONF" >&2
+    exit 1
+fi
+
+# Source in our configuration
+. "$CONF"
+
+case "$SERVER_MODE" in
+    MASTER)
+        $JOB
+        ;;
+    SLAVE)
+        ;;
+    UNCONFIGURED)
+        echo "SERVER_MODE not configured. Please edit $CONF" >&2
+        ;;
+
+    *)
+        echo "Unkonwn SERVER_MODE '$SERVER_MODE' in file $CONF" >&2
+        ;;
+esac
