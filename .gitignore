@@ -1,0 +1,14 @@
+SQL/install_funcs.sql
+SQL/create_dbm.sql
+.vagrant/
+debian/autoreconf.*
+debian/cms-backend.debhelper.log
+debian/cms-backend.substvars
+debian/cms-backend/
+debian/files
+autom4te.cache/
+Makefile
+config.*
+configure
+*.deb
+*.so

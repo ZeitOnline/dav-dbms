@@ -22,7 +22,7 @@ PG_LIBDIR=@PG_LIBDIR@
 
 SRC=facts.c
 
-all: facts.so install_funcs.sql
+all: facts.so
 
 facts.so: facts.c facts.h Makefile
 	$(CC) $(WARNINGS) $(CFLAGS) $(LIBS) -o facts.so $(SRC)
