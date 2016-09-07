@@ -1,3 +1,9 @@
+cms-backend (0.4.2-zeit1) unstable; urgency=low
+
+  * Update build for Ubuntu-14
+
+ -- Wolfgang Schnerring <wolfgang.schnerring@zeit.de>  Wed, 07 Sep 2016 13:35:59 +0200
+
 cms-backend (0.4.2-zeit0) unstable; urgency=low
 
   * Added configuration infrastructure
