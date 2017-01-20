@@ -1,3 +1,9 @@
+cms-backend (0.4.2-zeit2) unstable; urgency=low
+
+  * Bump postgres dependency version to 9.6
+
+ -- Dominik Hoppe <dominik.hoppe@zeit.de>  Fri, 20 Jan 2017 12:32:00 +0100
+
 cms-backend (0.4.2-zeit1) unstable; urgency=low
 
   * Update build for Ubuntu-14
