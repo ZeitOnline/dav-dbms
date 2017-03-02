@@ -1,3 +1,9 @@
+cms-backend (0.4.3-zeit1) unstable; urgency=low
+
+  * Ensure postgres 9.6 compatibility of SQL files
+
+ -- Dominik Hoppe <dominik.hoppe@zeit.de>  Thu, 02 Mar 2017 16:32:00 +0100
+
 cms-backend (0.4.2-zeit2) unstable; urgency=low
 
   * Bump postgres dependency version to 9.6

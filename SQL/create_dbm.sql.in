@@ -32,7 +32,7 @@ COMMIT;
 CREATE FUNCTION "plpgsql_call_handler" ()
   RETURNS opaque
   AS '@PG_LIBDIR@/plpgsql.so', 'plpgsql_call_handler'
-  LANGUAGE 'C';
+  LANGUAGE C;
 
 CREATE LANGUAGE plpgsql
   HANDLER plpgsql_call_handler;
@@ -87,4 +87,4 @@ CREATE FUNCTION forget(text, text, text, text) RETURNS bool AS'
     END IF;
     RETURN result;
   END;
-' LANGUAGE 'plpgsql';
+' LANGUAGE plpgsql;
