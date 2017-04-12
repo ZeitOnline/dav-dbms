@@ -1,3 +1,9 @@
+cms-backend (0.4.4-zeit1) unstable; urgency=low
+
+  * Remove unused value_hash_idx
+
+ -- Wolfgang Schnerring <wolfgang.schnerring@zeit.de>  Wed, 07 Sep 2016 13:35:59 +0200
+
 cms-backend (0.4.3-zeit1) unstable; urgency=low
 
   * Ensure postgres 9.6 compatibility of SQL files
