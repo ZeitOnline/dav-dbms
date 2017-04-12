@@ -1,14 +1,5 @@
 -- Filespec: $Id$
 -- Process me with: psql -Ucmsadmin -f < my_filename.sql
--- Index on property values.
-
-DROP INDEX value_hash_idx;
-
-CREATE INDEX value_hash_idx
-  ON facts USING hash (value);
-
--- Unfortunately PostgreSQL currently doesn't support
--- hash indices for multiple values.
 
 -- Namespace and name together build one atomic
 -- unit, no need to create individual indices.
