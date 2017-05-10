@@ -40,4 +40,4 @@ CLUSTER full_btree_idx on facts;
 DROP INDEX events_by_logdate;
 
 CREATE INDEX CONCURRENTLY events_by_logdate
-  ON triggers USING btree (logdate) ;
+  ON triggers USING btree (logdate);
